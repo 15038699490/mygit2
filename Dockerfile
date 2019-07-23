@@ -1,5 +1,5 @@
 #基于centos镜像
-FROM centos
+FROM registry.cn-zhangjiakou.aliyuncs.com/away/repositories:5.1.5
 
 #维护人的信息
 MAINTAINER The CentOS Project Weber boy <15038699490@163.com>
