@@ -1,22 +1,22 @@
-FROM registry.cn-zhangjiakou.aliyuncs.com/away/repositories:v1
+#基于centos镜像
+FROM centos
 
-MAINTAINER Weber boy
-#install java
-#RUN yum -y install java
-ADD ./jdk-7u79-linux-x64.tar.gz /root
-#ADD ./ecf.platform.web-0.0.1-SNAPSHOT.jar /apps/svr/
-#ADD ./start.sh /apps/svr/
-##set environment variable
-ENV JAVA_HOME /root/jdk1.7.0_79
-ENV CLASSPATH .:$JAVA_HOME/lib:$JRE_HOME/lib
-ENV PATH $JAVA_HOME/bin:$PATH
-#set charset
-ENV LANG "zh_CN.UTF-8"
-#inatall app 
-EXPOSE 80 443 8082
-VOLUME ["/apps/logs/","/apps/svr/"]
-#start app
-CMD echo "start app ..."
-#ENTRYPOINT java -jar /apps/svr/ecf.platform.web-0.0.1-SNAPSHOT.jar --server.port=8082 --spring.profiles.active=sit 
-ENTRYPOINT /apps/svr/start.sh
-CMD echo "started app success"
+#维护人的信息
+MAINTAINER The CentOS Project Weber boy <15038699490@163.com>
+
+#安装httpd软件包
+RUN yum -y update
+RUN yum -y install httpd
+
+#开启80端口
+EXPOSE 80
+
+#复制网站首页文件至镜像中web站点下
+ADD index.html /var/www/html/index.html
+
+#复制该脚本至镜像中，并修改其权限
+ADD run.sh /run.sh
+RUN chmod 775 /run.sh
+
+#当启动容器时执行的脚本文件
+CMD ["/run.sh"]
