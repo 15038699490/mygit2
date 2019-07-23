@@ -1,32 +1,22 @@
 FROM registry.cn-zhangjiakou.aliyuncs.com/away/repositories:v1
 
-ARG DEBIAN_FRONTEND=noninteractive
-ARG JAVA_VERSION=8
-ARG JAVA_UPDATE=172
-ARG JAVA_BUILD=11
-ARG JAVA_PACKAGE=jdk
-ARG JAVA_HASH=a58eab1ec242421181065cdc37240b08
-
-ENV LANG C.UTF-8
-ENV JAVA_HOME=/opt/jdk
-ENV PATH=${PATH}:${JAVA_HOME}/bin
-
-RUN set -ex \
- && apt-get update \
- && apt-get -y install ca-certificates wget unzip \
- && wget -q --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-         -O /tmp/java.tar.gz \
-         http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_UPDATE}-b${JAVA_BUILD}/${JAVA_HASH}/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_UPDATE}-linux-x64.tar.gz \
- && CHECKSUM=$(wget -q -O - https://www.oracle.com/webfolder/s/digest/${JAVA_VERSION}u${JAVA_UPDATE}checksum.html | grep -E "${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_UPDATE}-linux-x64\.tar\.gz" | grep -Eo '(sha256: )[^<]+' | cut -d: -f2 | xargs) \
- && echo "${CHECKSUM}  /tmp/java.tar.gz" > /tmp/java.tar.gz.sha256 \
- && sha256sum -c /tmp/java.tar.gz.sha256 \
- && mkdir ${JAVA_HOME} \
- && tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME} --strip-components=1 \
- && wget -q --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-         -O /tmp/jce_policy.zip \
-         http://download.oracle.com/otn-pub/java/jce/${JAVA_VERSION}/jce_policy-${JAVA_VERSION}.zip \
- && unzip -jo -d ${JAVA_HOME}/jre/lib/security /tmp/jce_policy.zip \
- && rm -rf ${JAVA_HOME}/jar/lib/security/README.txt \
-       /var/lib/apt/lists/* \
-       /tmp/* \
-       /root/.wget-hsts
+MAINTAINER Weber boy
+#install java
+#RUN yum -y install java
+ADD ./jdk-7u79-linux-x64.tar.gz /root
+#ADD ./ecf.platform.web-0.0.1-SNAPSHOT.jar /apps/svr/
+#ADD ./start.sh /apps/svr/
+##set environment variable
+ENV JAVA_HOME /root/jdk1.7.0_79
+ENV CLASSPATH .:$JAVA_HOME/lib:$JRE_HOME/lib
+ENV PATH $JAVA_HOME/bin:$PATH
+#set charset
+ENV LANG "zh_CN.UTF-8"
+#inatall app 
+EXPOSE 80 443 8082
+VOLUME ["/apps/logs/","/apps/svr/"]
+#start app
+CMD echo "start app ..."
+#ENTRYPOINT java -jar /apps/svr/ecf.platform.web-0.0.1-SNAPSHOT.jar --server.port=8082 --spring.profiles.active=sit 
+ENTRYPOINT /apps/svr/start.sh
+CMD echo "started app success"
