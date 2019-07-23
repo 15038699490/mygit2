@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM registry.cn-zhangjiakou.aliyuncs.com/away/repositories:v1
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG JAVA_VERSION=8
