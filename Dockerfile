@@ -15,5 +15,5 @@ ENV CLASSPATH .:$JAVA_HOME/lib:$JRE_HOME/lib
 ENV PATH $PATH:$JAVA_HOME/bin
 ENV PATH $PATH:$M2_HOME/bin
 ENV CATALINA_OPTS -Xms128m -Xmx1024m -XX:PermSize=64M -XX:MaxPermSize=512M
-RUN cd /usr/local/apache-tomcat-9.0.19/logs && echo "1" >>count.txt
+#RUN cd /usr/local/apache-tomcat-9.0.19/logs && echo "1" >>count.txt
 ENTRYPOINT /usr/local/apache-tomcat-9.0.19/bin/startup.sh && tail -F /usr/local/apache-tomcat-9.0.19/logs/catalina.out
