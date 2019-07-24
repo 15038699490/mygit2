@@ -4,19 +4,16 @@ FROM registry.cn-zhangjiakou.aliyuncs.com/away/repositories:5.1.5
 #维护人的信息
 MAINTAINER The CentOS Project Weber boy <15038699490@163.com>
 
-#安装httpd软件包
-RUN yum -y update
-RUN yum -y install httpd
+COPY ./jdk-8u11-linux-x64.tar.gz /usr/local
+COPY ./apache-tomcat-9.0.19.tar.gz /
+COPY ./apache-maven-3.6.1-bin.tar.gz /usr/local
 
-#开启80端口
-EXPOSE 80
-
-#复制网站首页文件至镜像中web站点下
-ADD index.html /var/www/html/index.html
-
-#复制该脚本至镜像中，并修改其权限
-ADD run.sh /run.sh
-RUN chmod 775 /run.sh
-
-#当启动容器时执行的脚本文件
-CMD ["/run.sh"]
+ENV M2_HOME=/usr/local/apache-maven-3.6.1
+ENV JAVA_HOME /usr/local/jdk1.8.0_11
+ENV JRE_HOME $JAVA_HOME/jre  
+ENV CLASSPATH .:$JAVA_HOME/lib:$JRE_HOME/lib  
+ENV PATH $PATH:$JAVA_HOME/bin
+ENV PATH $PATH:$M2_HOME/bin
+ENV CATALINA_OPTS -Xms128m -Xmx1024m -XX:PermSize=64M -XX:MaxPermSize=512M
+RUN cd /apache-tomcat-9.0.19/logs && echo "1" >>count.txt
+ENTRYPOINT /apache-tomcat-9.0.19/bin/startup.sh && tail -F /apache-tomcat-9.0.19/logs/catalina.out
